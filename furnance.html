@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Temperature Prediction In Blast Furnance(Next 1,2,3,5,10....24hrs)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d48530;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="date"], select {
+            width: calc(100% - 22px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Skin Temperature Prediction In Blast Furnance Today From Now To Next Few Hours</h1>
+    <form id="prediction-form">
+        <label for="CB_FLOW">CB_FLOW:</label>
+        <input type="text" id="CB_FLOW" name="CB_FLOW"><br>
+        
+        <label for="CB_PRESS">CB_PRESS:</label>
+        <input type="text" id="CB_PRESS" name="CB_PRESS"><br>
+        
+        <label for="TOP_TEMP">TOP_TEMP:</label>
+        <input type="text" id="TOP_TEMP" name="TOP_TEMP"><br>
+        
+        <label for="CO">CO:</label>
+        <input type="text" id="CO" name="CO"><br>
+        
+        <label for="CO2">CO2:</label>
+        <input type="text" id="CO2" name="CO2"><br>
+        
+        <label for="H2">H2:</label>
+        <input type="text" id="H2" name="H2"><br>
+        
+        <label for="O2_FLOW">O2_FLOW:</label>
+        <input type="text" id="O2_FLOW" name="O2_FLOW"><br>
+        
+        <center>
+            <button type="button" onclick="predictTemp()">Predict</button>
+            <button type="button" onclick="clearForm()">Clear</button>
+        </center>
+    </form>
+    <h2 id="result"></h2>
+
+    <script>
+        function predictTemp() {
+            const form = document.getElementById('prediction-form');
+            const formData = new FormData(form);
+            const inputData = {};
+            formData.forEach((value, key) => { inputData[key] = parseFloat(value); });
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = 
+    'Predicted Skin Temperature Now: ' + data.predicted_skin_temp_now + '\u2103<br>' +
+    'Predicted Skin Temperature Next 1 Hour: ' + data.predicted_skin_temp_next_1_hour + '\u2103<br>' +
+    'Predicted Skin Temperature Next 2 Hours: ' + data.predicted_skin_temp_next_2_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 3 Hours: ' + data.predicted_skin_temp_next_3_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 4 Hours: ' + data.predicted_skin_temp_next_4_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 5 Hours: ' + data.predicted_skin_temp_next_5_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 8 Hours: ' + data.predicted_skin_temp_next_8_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 10 Hours: ' + data.predicted_skin_temp_next_10_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 12 Hours: ' + data.predicted_skin_temp_next_12_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 20 Hours: ' + data.predicted_skin_temp_next_20_hours + '\u2103<br>' +
+    'Predicted Skin Temperature Next 24 Hours: ' + data.predicted_skin_temp_next_24_hours + '\u2103<br>' +
+    'Date(TODAY): ' + data.date + '<br>' +
+    'Current Time: ' + data.hour;
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function clearForm() {
+            document.getElementById('prediction-form').reset();
+            document.getElementById('result').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
